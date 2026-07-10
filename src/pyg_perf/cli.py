@@ -56,6 +56,8 @@ def bench_main(argv: list[str] | None = None) -> int:
     print(f"# {r.note}")
     from pyg_perf.runners import run_loader_bench
 
-    rows = [t.as_row() for t in run_loader_bench(cfg)]
-    print(json.dumps(rows, indent=2))
+    timings, notes = run_loader_bench(cfg)
+    for note in notes:
+        print(f"# {note}")
+    print(json.dumps([t.as_row() for t in timings], indent=2))
     return 0

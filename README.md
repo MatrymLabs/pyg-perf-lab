@@ -7,10 +7,16 @@ not actually run.**
 
 > **Verification status (honest by design).**
 > - **CPU paths — run and verified** on the author's host (aarch64 Linux, no GPU): the
->   config/timing logic, `NeighborLoader` benchmark, and `torch.profiler` on CPU.
+>   config/timing logic, the `full_batch_forward` benchmark, and `torch.profiler` on CPU.
+>   See the dated snapshot in [docs/sample_cpu_run.md](docs/sample_cpu_run.md) — the
+>   profiler measured `aten::scatter_add_` as the dominant cost (the classic GNN
+>   gather-scatter hotspot).
+> - **Neighbor sampling** (`NeighborLoader`) needs a compiled backend (`pyg-lib` or
+>   `torch-sparse`); when it's absent the tool **reports and skips** that row rather than
+>   crashing — honest degradation, not a silent gap.
 > - **GPU / CUDA / Nsight paths — authored, not yet verified here** (no GPU on this host).
->   They are written from the official docs to run on a CUDA box and are marked
->   *(verify on a CUDA host)* throughout. See [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md).
+>   Written from the official docs to run on a CUDA box and marked *(verify on a CUDA
+>   host)* throughout. See [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md).
 
 ## Install
 

@@ -33,13 +33,19 @@ src = ["src", "tests", "scripts"]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.mypy]
-python_version = "3.10"
+# Analysis target 3.12 so mypy can parse newer-syntax dependency stubs (e.g. numpy 2.5's
+# `type` statements) when the bench extra is installed. Source stays 3.10-compatible (ruff
+# enforces py310 syntax); requires-python is >=3.10.
+python_version = "3.12"
 mypy_path = "src"
 explicit_package_bases = true
-# torch / torch_geometric ship types but aren't installed in the base env; don't fail on them.
+# Don't typecheck third-party internals: absent in the base env (ignore_missing_imports),
+# and when installed for benchmarks (torch/numpy), skip following into their stubs so a
+# dependency's newer-syntax stubs can't break our gate.
 [[tool.mypy.overrides]]
 module = ["torch.*", "torch_geometric.*", "numpy.*"]
 ignore_missing_imports = true
+follow_imports = "skip"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

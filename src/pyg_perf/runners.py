@@ -89,29 +89,40 @@ def run_profile(cfg: RunConfig) -> str:
     return header + table
 
 
-def run_loader_bench(cfg: RunConfig) -> list[Timing]:
+def run_loader_bench(cfg: RunConfig) -> tuple[list[Timing], list[str]]:
     """Benchmark data loading: full-batch forward vs a NeighborLoader mini-batch loop
-    (and PrefetchLoader on CUDA). Returns Timing rows for comparison."""
+    (and PrefetchLoader on CUDA). Returns (timing rows, honest notes about anything skipped).
+
+    Neighbor sampling needs a compiled backend (`pyg-lib` or `torch-sparse`); if it is not
+    installed, that row is SKIPPED with a note rather than crashing -- honest degradation."""
     import torch
     from torch_geometric.loader import NeighborLoader
 
     data, model, _opt, device = _prepare(cfg)
     results: list[Timing] = []
+    notes: list[str] = []
 
-    # 1) Full-batch forward (the naive baseline).
+    # 1) Full-batch forward (the naive baseline) -- no sampler backend needed.
     def full_batch() -> None:
         with torch.no_grad():
             model(data.x, data.edge_index)
 
     results.append(time_calls(full_batch, device, runs=cfg.steps, label="full_batch_forward"))
 
-    # 2) NeighborLoader mini-batches (the scalable path).
+    # 2) NeighborLoader mini-batches (the scalable path) -- needs pyg-lib / torch-sparse.
     loader = NeighborLoader(
         data,
         num_neighbors=list(cfg.num_neighbors),
         batch_size=cfg.batch_size,
         input_nodes=data.train_mask,
     )
+    try:
+        probe = iter(loader)
+        next(probe)  # forces the sampler backend to load
+    except ImportError as exc:
+        notes.append(f"neighbor_loader SKIPPED -- {exc}. Install pyg-lib or torch-sparse.")
+        return results, notes
+
     it = iter(loader)
 
     def neighbor_step() -> None:
@@ -154,4 +165,4 @@ def run_loader_bench(cfg: RunConfig) -> list[Timing]:
 
         results.append(time_calls(prefetch_step, device, runs=cfg.steps, label="prefetch_loader"))
 
-    return results
+    return results, notes
