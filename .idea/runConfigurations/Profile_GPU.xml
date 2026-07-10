@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <!-- GPU run config — use on a CUDA host. Adds AMP + torch.compile. -->
+  <!-- GPU run config - use on a CUDA host. Adds AMP + torch.compile. -->
   <configuration default="false" name="Profile (GPU, verify on CUDA)" type="PythonConfigurationType" factoryName="Python">
     <module name="pyg-perf-lab" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/profile_step.py" />

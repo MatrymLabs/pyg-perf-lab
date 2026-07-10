@@ -10,7 +10,7 @@ check:
     - pip install -e ".[dev]"
     - make check
 
-# GPU lane — needs a runner tagged `gpu` with a CUDA torch build. Manual so it never
+# GPU lane - needs a runner tagged `gpu` with a CUDA torch build. Manual so it never
 # blocks the CPU pipeline.
 gpu-bench:
   stage: gpu

@@ -1,7 +1,7 @@
 [project]
 name = "pyg-perf-lab"
 version = "0.1.0"
-description = "A PyCharm + PyTorch Geometric performance-engineering package: profile, benchmark, and tune GNN training on CPU/GPU — with honest, verified evidence."
+description = "A PyCharm + PyTorch Geometric performance-engineering package: profile, benchmark, and tune GNN training on CPU/GPU - with honest, verified evidence."
 requires-python = ">=3.10"
 dependencies = []
 

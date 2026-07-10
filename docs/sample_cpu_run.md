@@ -1,7 +1,7 @@
-# Sample verified run — CPU (this host)
+# Sample verified run - CPU (this host)
 
 > Captured 2026-07-10 on the author's host: **aarch64 Linux (Raspberry Pi), no GPU**,
-> torch 2.13.0 (CPU), torch-geometric 2.8.0. A dated snapshot, not a live claim —
+> torch 2.13.0 (CPU), torch-geometric 2.8.0. A dated snapshot, not a live claim -
 > reproduce with the commands below. GPU numbers await a run on the CUDA box.
 
 ## `python scripts/bench_loader.py --device cpu --num-nodes 5000 --steps 15`
@@ -46,5 +46,5 @@ autograd::engine::evaluate_function: IndexSelectBack...         0.27%       7.68
 ```
 
 **Interpretation:** `aten::scatter_add_` dominates self-CPU time, with
-`index_select`/`gather` close behind — the textbook GNN message-passing gather-scatter
+`index_select`/`gather` close behind - the textbook GNN message-passing gather-scatter
 cost. On a real workload this is the signal to try `SparseTensor` (see IMPLEMENTATION.md).
