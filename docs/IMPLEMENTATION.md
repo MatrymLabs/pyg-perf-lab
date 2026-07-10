@@ -7,7 +7,7 @@ says you're bottlenecked below Python.*
 > **Verification status.** This package's **CPU** paths were run and verified on the
 > author's host (aarch64 Linux, no GPU). The **GPU/CUDA/Nsight** paths are authored from
 > the official docs and the research brief and are **runnable on a CUDA host but not yet
-> verified here** — every such section is marked *(GPU — verify on a CUDA host)*. Nothing
+> verified here** - every such section is marked *(GPU - verify on a CUDA host)*. Nothing
 > is claimed as measured that was not actually run.
 
 ## The workflow (Mermaid)
@@ -48,17 +48,17 @@ flowchart LR
 | Artifact | What it does | Verified |
 |----------|--------------|----------|
 | `scripts/profile_step.py` | `torch.profiler` over training steps → key-averages table + Chrome trace | CPU ✓ · GPU *(verify on CUDA host)* |
-| `scripts/bench_loader.py` | full-batch vs `NeighborLoader` vs `PrefetchLoader` timings (ms) | CPU ✓ (loader) · GPU *(PrefetchLoader — verify)* |
+| `scripts/bench_loader.py` | full-batch vs `NeighborLoader` vs `PrefetchLoader` timings (ms) | CPU ✓ (loader) · GPU *(PrefetchLoader - verify)* |
 | `src/pyg_perf/timing.py` | correct timing with CUDA sync (no async mis-measure) | CPU ✓ |
 | `src/pyg_perf/config.py` | honest device resolution (asks cuda, reports fallback) | CPU ✓ |
 | `.idea/runConfigurations/` | one-click PyCharm run configs | authored |
-| `external_tools/{nsys,ncu}.sh` | Nsight Systems / Compute wrappers | *(GPU — verify on CUDA host)* |
+| `external_tools/{nsys,ncu}.sh` | Nsight Systems / Compute wrappers | *(GPU - verify on CUDA host)* |
 | `.github/workflows/ci.yml`, `.gitlab-ci.yml` | CPU matrix + documented self-hosted GPU job | CPU CI ✓ |
 
 ## Running it
 
 ```bash
-# 1) install torch for YOUR platform first (CPU or CUDA build) — see pytorch.org/get-started
+# 1) install torch for YOUR platform first (CPU or CUDA build) - see pytorch.org/get-started
 pip install -e ".[bench]"
 
 # 2) CPU (runs anywhere)
@@ -75,12 +75,12 @@ python scripts/profile_step.py --device cuda --amp --compile
 - `bench_loader` prints ms per call for each loader strategy. Expect `neighbor_loader` to
   scale to graphs `full_batch` can't hold; on GPU, `prefetch_loader` should hide copy latency.
 - `profile_step` prints the profiler's top ops by self-time and writes `trace_<device>.json`
-  — open it in `chrome://tracing` or the PyCharm trace viewer.
+  - open it in `chrome://tracing` or the PyCharm trace viewer.
 
 ## GPU knobs *(verify on a CUDA host)*
 
 ```bash
-# Serialize kernel launches so tracebacks point at the real op (debug only — slower):
+# Serialize kernel launches so tracebacks point at the real op (debug only - slower):
 CUDA_LAUNCH_BLOCKING=1 python scripts/profile_step.py --device cuda
 
 # Tame allocator fragmentation for spiky, variable-size neighbor batches:
@@ -88,11 +88,11 @@ PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128 python scripts/bench_loader.py --d
 ```
 
 - **AMP:** `--amp` wraps the forward in `torch.autocast("cuda", float16)`. CUDA only;
-  ignored on CPU (honestly — see `train_step`).
+  ignored on CPU (honestly - see `train_step`).
 - **`torch.compile(dynamic=True)`:** `--compile`. `dynamic=True` because neighbor sampling
   makes batch shapes vary; watch for recompiles in the profiler.
 
-## Nsight escalation *(GPU — verify on a CUDA host)*
+## Nsight escalation *(GPU - verify on a CUDA host)*
 
 Only after the PyTorch/PyG evidence says you're bottlenecked below Python:
 
@@ -101,21 +101,21 @@ external_tools/nsys.sh python scripts/profile_step.py --device cuda   # timeline
 external_tools/ncu.sh  python scripts/profile_step.py --device cuda   # per-kernel efficiency
 ```
 
-`nvprof` is legacy — use Nsight on modern CUDA toolchains.
+`nvprof` is legacy - use Nsight on modern CUDA toolchains.
 
 ## Sources
 
-- torch.profiler — https://pytorch.org/docs/stable/profiler.html
-- PyG NeighborLoader / PrefetchLoader —
+- torch.profiler - https://pytorch.org/docs/stable/profiler.html
+- PyG NeighborLoader / PrefetchLoader -
   https://pytorch-geometric.readthedocs.io/en/latest/modules/loader.html
-- torch.compile — https://pytorch.org/docs/stable/generated/torch.compile.html
-- CUDA allocator (`PYTORCH_CUDA_ALLOC_CONF`) —
+- torch.compile - https://pytorch.org/docs/stable/generated/torch.compile.html
+- CUDA allocator (`PYTORCH_CUDA_ALLOC_CONF`) -
   https://pytorch.org/docs/stable/notes/cuda.html#memory-management
-- Nsight Systems / Compute — https://developer.nvidia.com/nsight-systems ·
+- Nsight Systems / Compute - https://developer.nvidia.com/nsight-systems ·
   https://developer.nvidia.com/nsight-compute
 
 ## Caveats / limitations
 
-- **No GPU on the author's host** — GPU paths are authored, not yet measured here.
+- **No GPU on the author's host** - GPU paths are authored, not yet measured here.
 - Synthetic random graphs are for *pipeline* timing, not accuracy or real-graph structure.
 - `torch.compile` gains are workload-dependent and can regress with frequent recompiles.

@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  # CPU lane — runs on hosted runners, no torch heavy path required for gates.
+  # CPU lane - runs on hosted runners, no torch heavy path required for gates.
   check:
     runs-on: ubuntu-latest
     strategy:
@@ -28,7 +28,7 @@ jobs:
       - name: Gates (lint · types · tests)
         run: make check
 
-  # GPU lane — DOCUMENTED, disabled by default. Enable when you register a self-hosted
+  # GPU lane - DOCUMENTED, disabled by default. Enable when you register a self-hosted
   # runner with a CUDA GPU (labels: [self-hosted, gpu]). It installs the bench extra and
   # runs the real GPU benchmark. Left `if: false` so it never blocks CPU CI.
   gpu-bench:
