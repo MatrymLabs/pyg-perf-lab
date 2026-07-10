@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  # CPU lane — runs on hosted runners, no torch heavy path required for gates.
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dev tools (no torch)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Gates (lint · types · tests)
+        run: make check
+
+  # GPU lane — DOCUMENTED, disabled by default. Enable when you register a self-hosted
+  # runner with a CUDA GPU (labels: [self-hosted, gpu]). It installs the bench extra and
+  # runs the real GPU benchmark. Left `if: false` so it never blocks CPU CI.
+  gpu-bench:
+    if: false  # flip to `github.event_name == 'workflow_dispatch'` once a GPU runner exists
+    runs-on: [self-hosted, gpu]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Install with bench extra (assumes a CUDA torch build on the runner)
+        run: pip install -e ".[bench]"
+      - name: GPU benchmark
+        run: python scripts/bench_loader.py --device cuda --steps 30

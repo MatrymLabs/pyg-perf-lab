@@ -1,0 +1,21 @@
+stages: [check, gpu]
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip"
+
+check:
+  stage: check
+  image: python:3.11
+  script:
+    - pip install -e ".[dev]"
+    - make check
+
+# GPU lane — needs a runner tagged `gpu` with a CUDA torch build. Manual so it never
+# blocks the CPU pipeline.
+gpu-bench:
+  stage: gpu
+  tags: [gpu]
+  when: manual
+  script:
+    - pip install -e ".[bench]"
+    - python scripts/bench_loader.py --device cuda --steps 30

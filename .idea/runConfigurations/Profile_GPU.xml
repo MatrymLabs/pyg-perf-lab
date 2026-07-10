@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <!-- GPU run config — use on a CUDA host. Adds AMP + torch.compile. -->
+  <configuration default="false" name="Profile (GPU, verify on CUDA)" type="PythonConfigurationType" factoryName="Python">
+    <module name="pyg-perf-lab" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/profile_step.py" />
+    <option name="PARAMETERS" value="--device cuda --amp --compile --steps 20" />
+    <envs>
+      <env name="PYTORCH_CUDA_ALLOC_CONF" value="max_split_size_mb:128" />
+    </envs>
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>

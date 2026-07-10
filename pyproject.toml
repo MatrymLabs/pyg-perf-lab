@@ -1,0 +1,50 @@
+[project]
+name = "pyg-perf-lab"
+version = "0.1.0"
+description = "A PyCharm + PyTorch Geometric performance-engineering package: profile, benchmark, and tune GNN training on CPU/GPU — with honest, verified evidence."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+# The benchmark/profile scripts need these; kept out of the base install so lint/type/
+# tests run without a 2 GB torch download. Install torch from the official index for your
+# platform first (see README), then: pip install -e ".[bench]".
+bench = ["torch", "torch-geometric", "numpy"]
+dev = ["ruff", "mypy", "pytest"]
+
+[project.scripts]
+pyg-profile = "pyg_perf.cli:profile_main"
+pyg-bench = "pyg_perf.cli:bench_main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = ["pyg_perf"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.10"
+mypy_path = "src"
+explicit_package_bases = true
+# torch / torch_geometric ship types but aren't installed in the base env; don't fail on them.
+[[tool.mypy.overrides]]
+module = ["torch.*", "torch_geometric.*", "numpy.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+  "gpu: tests that require a CUDA GPU (skipped automatically when unavailable)",
+  "bench: tests that require torch + torch_geometric installed",
+]

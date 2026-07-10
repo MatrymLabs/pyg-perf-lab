@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Virtual environment
+.venv/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Profiler / benchmark artifacts (regenerated)
+trace_*.json
+*.nsys-rep
+*.ncu-rep
+coverage.xml
+.coverage
+
+# OS / editor
+.DS_Store
+*.swp

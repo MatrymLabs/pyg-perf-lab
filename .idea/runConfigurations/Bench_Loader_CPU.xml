@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Bench Loader (CPU)" type="PythonConfigurationType" factoryName="Python">
+    <module name="pyg-perf-lab" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/bench_loader.py" />
+    <option name="PARAMETERS" value="--device cpu --num-nodes 5000 --steps 15" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
