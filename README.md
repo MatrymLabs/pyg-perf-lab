@@ -26,6 +26,7 @@ The base install is light (no torch - so lint/type/tests run anywhere):
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"     # or: make env
 make check                  # ruff + mypy + pytest (no torch needed)
+make security               # bandit + pip-audit + detect-secrets (no torch needed)
 ```
 
 To run the benchmarks, install a **torch build for your platform** first

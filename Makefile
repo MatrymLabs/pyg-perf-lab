@@ -1,4 +1,4 @@
-.PHONY: env fix lint typecheck test check bench-cpu clean
+.PHONY: env fix lint typecheck test check security secrets patch bench-cpu clean
 
 # --- Environment: dev tools only (no torch -- that is the heavy `bench` extra) ---
 env:
@@ -23,6 +23,28 @@ test:
 	pytest -q
 
 check: lint typecheck test
+
+# --- Security gate (matches the fleet control panel): SAST + deps + secrets ---
+# Report-only; never mutates. Run in CI so vuln status is verified, not assumed.
+security:
+	bandit -q -r src scripts
+	pip-audit --skip-editable
+	@git ls-files | detect-secrets-hook --baseline .secrets.baseline
+
+secrets:
+	@git ls-files | detect-secrets-hook --baseline .secrets.baseline
+
+# --- Security patch cycle: scan deps -> file dated evidence -> apply fixes -> re-verify ---
+# Auto-applies to the venv only; never commits or pushes a bump.
+patch:
+	@mkdir -p security-evidence
+	@echo "→ scanning dependencies for known CVEs..."
+	-pip-audit --skip-editable -f json -o "security-evidence/$$(date -u +%Y-%m-%d)-pip-audit.json"
+	@echo "→ applying available security fixes (pip-audit --fix)..."
+	-pip-audit --fix --skip-editable
+	@echo "→ re-verifying the patched environment..."
+	$(MAKE) check
+	@echo "✓ security patch cycle complete (evidence: security-evidence/)"
 
 # --- Run the CPU benchmark for real (needs the bench extra installed) ---
 bench-cpu:
