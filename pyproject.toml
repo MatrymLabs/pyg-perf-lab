@@ -10,7 +10,7 @@ dependencies = []
 # tests run without a 2 GB torch download. Install torch from the official index for your
 # platform first (see README), then: pip install -e ".[bench]".
 bench = ["torch", "torch-geometric", "numpy"]
-dev = ["ruff", "mypy", "pytest"]
+dev = ["ruff", "mypy", "pytest", "bandit", "pip-audit", "detect-secrets"]
 
 [project.scripts]
 pyg-profile = "pyg_perf.cli:profile_main"

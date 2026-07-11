@@ -20,6 +20,9 @@ trace_*.json
 coverage.xml
 .coverage
 
+# Security patch evidence (dated, reproducible from `make patch`; not tracked)
+security-evidence/
+
 # OS / editor
 .DS_Store
 *.swp
