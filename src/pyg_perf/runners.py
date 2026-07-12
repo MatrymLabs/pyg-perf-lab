@@ -139,15 +139,18 @@ def run_loader_bench(cfg: RunConfig) -> tuple[list[Timing], list[str]]:
     results.append(time_calls(neighbor_step, device, runs=cfg.steps, label="neighbor_loader"))
 
     # 3) PrefetchLoader overlaps host->device copy with compute -- CUDA only.
+    #    The inner NeighborLoader must sample from CPU data so PrefetchLoader can
+    #    pin_memory() and async-transfer to CUDA.  We keep a separate CPU copy.
     if device == "cuda":
         from torch_geometric.loader import PrefetchLoader
 
+        cpu_data = make_graph(cfg)  # fresh CPU copy for the sampler
         ploader = PrefetchLoader(
             NeighborLoader(
-                data,
+                cpu_data,
                 num_neighbors=list(cfg.num_neighbors),
                 batch_size=cfg.batch_size,
-                input_nodes=data.train_mask,
+                input_nodes=cpu_data.train_mask,
             ),
             device=torch.device("cuda"),
         )
