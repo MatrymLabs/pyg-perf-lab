@@ -60,6 +60,7 @@ python scripts/profile_step.py --device cuda --amp --compile
 | `external_tools/{nsys,ncu}.sh` | Nsight Systems / Compute wrappers *(GPU host)* |
 | `.github/workflows/ci.yml`, `.gitlab-ci.yml` | CPU matrix (runs) + documented self-hosted GPU job |
 | `docs/IMPLEMENTATION.md` | The layered method + the five common PyG slowdowns + sources |
+| `docs/gpu_scaling_study.md` | **Verified RTX 4090 scaling study**: the full-batch/sampling crossover (~10^5 nodes), the CPU sampler wall, and why a serial harness cannot show PrefetchLoader's win |
 
 ## Method (one line)
 
