@@ -14,9 +14,16 @@ not actually run.**
 > - **Neighbor sampling** (`NeighborLoader`) needs a compiled backend (`pyg-lib` or
 >   `torch-sparse`); when it's absent the tool **reports and skips** that row rather than
 >   crashing - honest degradation, not a silent gap.
-> - **GPU / CUDA / Nsight paths - authored, not yet verified here** (no GPU on this host).
->   Written from the official docs to run on a CUDA box and marked *(verify on a CUDA
->   host)* throughout. See [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md).
+> - **GPU / CUDA benchmark + profiler paths - verified on a separate CUDA host**
+>   (Windows 11, RTX 4090, torch 2.11+cu128), captured 2026-07-12 as dated snapshots, not
+>   a live claim: see [docs/sample_gpu_run.md](docs/sample_gpu_run.md) and the
+>   [docs/gpu_scaling_study.md](docs/gpu_scaling_study.md) (the full-batch/sampling
+>   crossover near 10^5 nodes). The primary dev host above has no GPU; these were run on a
+>   second machine and reproduce with the printed commands.
+> - **Nsight wrappers (`nsys` / `ncu`) - authored, not yet captured here.** Written from
+>   the official docs to run on a CUDA box and marked *(verify on a CUDA host)*; the
+>   verified GPU docs above are benchmark/profiler output, not Nsight traces. See
+>   [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md).
 
 ## Install
 
