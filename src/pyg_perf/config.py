@@ -29,7 +29,9 @@ class Resolved:
 
 def resolve_device(prefer: str = "auto") -> Resolved:
     """Resolve a device honestly. `auto` picks cuda when present else cpu; an explicit
-    `cuda` request on a host without CUDA falls back to cpu WITH a loud note (never silent)."""
+    `cuda` request on a host without CUDA falls back to cpu WITH a loud note (never silent).
+    An unrecognized request raises ValueError rather than silently auto-selecting: the
+    module never pretends, so it never guesses what you meant either."""
     prefer = prefer.lower()
     has_cuda = cuda_available()
     if prefer in ("cuda", "gpu"):
@@ -38,8 +40,9 @@ def resolve_device(prefer: str = "auto") -> Resolved:
         return Resolved("cpu", "CUDA requested but not available on this host -- fell back to CPU")
     if prefer == "cpu":
         return Resolved("cpu", "using CPU as requested")
-    # auto
-    return Resolved("cuda" if has_cuda else "cpu", "auto-selected")
+    if prefer == "auto":
+        return Resolved("cuda" if has_cuda else "cpu", "auto-selected")
+    raise ValueError(f"unknown device {prefer!r}; expected one of: auto, cpu, cuda, gpu")
 
 
 @dataclass(frozen=True)
