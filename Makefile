@@ -1,4 +1,4 @@
-.PHONY: env fix lint typecheck test check security secrets patch bench-cpu clean
+.PHONY: env fix lint typecheck test check security secrets sbom patch bench-cpu clean
 
 # --- Environment: dev tools only (no torch -- that is the heavy `bench` extra) ---
 env:
@@ -33,6 +33,14 @@ security:
 
 secrets:
 	@git ls-files | detect-secrets-hook --baseline .secrets.baseline
+
+# --- Software bill of materials (CycloneDX) from the installed environment ---
+# Supply-chain evidence (NIST SSDF PS.3): git-ignored (reproducible from the recorded
+# commit), produced + uploaded as an artifact in CI. Advertised, not committed.
+sbom:
+	@mkdir -p security-evidence
+	cyclonedx-py environment -o security-evidence/sbom.cdx.json
+	@echo "✓ SBOM -> security-evidence/sbom.cdx.json"
 
 # --- Security patch cycle: scan deps -> file dated evidence -> apply fixes -> re-verify ---
 # Auto-applies to the venv only; never commits or pushes a bump.

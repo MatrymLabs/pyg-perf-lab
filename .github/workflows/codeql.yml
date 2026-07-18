@@ -1,0 +1,40 @@
+# CodeQL -- GitHub-native static analysis (SAST) for the code AND the workflows.
+# Complements bandit (fast, local, in `make security`/CI) with GitHub's deeper
+# semantic scan; results land in the repo's Security > Code scanning tab. Public
+# repos get CodeQL for free.
+name: codeql
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "41 5 * * 1"  # weekly sweep (Monday), catches newly-published queries
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, actions]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      # Python is interpreted -- no build step needed; CodeQL analyzes the source directly.
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

@@ -43,6 +43,15 @@ jobs:
           pip install -e ".[dev]"
       - name: Security gate (bandit · pip-audit · detect-secrets)
         run: make security
+      # SBOM from the installed dev environment. Reproducible from this commit; non-blocking.
+      - name: Software bill of materials (SBOM)
+        run: make sbom
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: security-evidence/sbom.cdx.json
+          if-no-files-found: warn
 
   # GPU lane - DOCUMENTED, disabled by default. Enable when you register a self-hosted
   # runner with a CUDA GPU (labels: [self-hosted, gpu]). It installs the bench extra and
