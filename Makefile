@@ -20,7 +20,7 @@ typecheck:
 	mypy src tests
 
 test:
-	pytest -q
+	pytest -q --cov=pyg_perf --cov-report=term-missing --cov-fail-under=78
 
 check: lint typecheck test
 
